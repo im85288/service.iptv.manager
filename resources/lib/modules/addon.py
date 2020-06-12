@@ -179,7 +179,8 @@ class Addon:
             data = self._get_data_from_addon(self.epg_uri)
             _LOGGER.debug(data)
         except Exception as exc:  # pylint: disable=broad-except
-            _LOGGER.error('Something went wrong while calling %s: %s', self.addon_id, exc)
+            # _LOGGER.error('Something went wrong while calling %s: %s', self.addon_id, exc)
+            raise Exception('Something went wrong while calling %s: %s' % self.addon_id, exc)
             return {}
 
         if data.get('version', 1) > EPG_VERSION:
