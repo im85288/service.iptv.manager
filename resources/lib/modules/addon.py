@@ -139,7 +139,7 @@ class Addon:
             data = self._get_data_from_addon(self.channels_uri)
             _LOGGER.debug(data)
         except Exception as exc:  # pylint: disable=broad-except
-            _LOGGER.error('Something went wrong while calling %s: %s', self.addon_id, exc)
+            _LOGGER.error('Something went wrong while calling %s', self.addon_id, exc_info=1)
             return []
 
         if data.get('version', 1) > CHANNELS_VERSION:
@@ -179,7 +179,7 @@ class Addon:
             data = self._get_data_from_addon(self.epg_uri)
             _LOGGER.debug(data)
         except Exception as exc:  # pylint: disable=broad-except
-            raise
+            _LOGGER.error('Something went wrong while calling %s', self.addon_id, exc_info=1)
             return {}
 
         if data.get('version', 1) > EPG_VERSION:
@@ -249,6 +249,7 @@ class Addon:
             buf = ''
             while True:
                 chunk = conn.recv(4096)
+                _LOGGER.warning('Received a chunk of %d bytes...', len(chunk))
                 if not chunk:
                     break
                 buf += chunk.decode()
@@ -257,6 +258,7 @@ class Addon:
                 # We got an empty reply, this means that something didn't go according to plan
                 raise Exception('Something went wrong in %s' % self.addon_id)
 
+            _LOGGER.warning('Received a total of %d bytes...', len(buf))
             return buf
 
         except socket.timeout:
